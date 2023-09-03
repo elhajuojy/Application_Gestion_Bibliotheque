@@ -18,6 +18,8 @@ services:
       # Opens port 3306 on the container
       - '3306'
       # Where our data will be persisted
+#    command:
+#      - ALTER USER 'user'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
     volumes:
       - my-db:/var/lib/mysql
 # Names our volume
