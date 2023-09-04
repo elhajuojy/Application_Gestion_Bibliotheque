@@ -1,17 +1,23 @@
 package ma.yc.sas.core;
 
+import ma.yc.sas.model.Book;
+import pl.mjaron.etudes.Obj;
+import pl.mjaron.etudes.Table;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class Print {
+public class Print<T> {
 
-    public static void  log(String... values){
-        Arrays.stream(values).toList().forEach((value)->{
-            System.out.println(value);
-        });
-    }
-    public  static void table(Collection<Object> table){
+//    T objectToPrint ;
+//
+//    public Print(T objectToPrint) {
+//        this.objectToPrint = objectToPrint;
+//    }
 
+    public static <T> void log(T objectToPrint){
+        System.out.println(objectToPrint);
     }
 }
+

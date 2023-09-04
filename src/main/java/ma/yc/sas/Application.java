@@ -1,44 +1,85 @@
 package ma.yc.sas;
 
+import ma.yc.sas.GUI.BookUseCase;
+import ma.yc.sas.GUI.EmprunatUseCase;
+import ma.yc.sas.GUI.MainGui;
+import ma.yc.sas.GUI.MemberUseCase;
 import ma.yc.sas.core.Print;
-import ma.yc.sas.core.QueryBuilder;
-import ma.yc.sas.database.Mysql_JDbC;
+import ma.yc.sas.core.Util;
+import ma.yc.sas.dao.CrudDao;
+import ma.yc.sas.dao.impl.BookDao;
+import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.model.Book;
+import pl.mjaron.etudes.Table;
 
-import java.math.BigDecimal;
+import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.Scanner;
 
 public class Application {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
 
-        System.out.println("Library Application ");
         try {
-            Collection<Book> books = new ArrayList<>();
-            Book book = new Book();
-            Mysql_JDbC mysqlJDbC = new Mysql_JDbC("jdbc:mysql://127.0.0.1:3306/library", "user", "password");
-            String query = QueryBuilder.select("BOOK","*");
-            Print.log(query);
-            mysqlJDbC.query(query);
-            while (mysqlJDbC.resultSet.next()){
-                book.toObject(mysqlJDbC.resultSet);
-                books.add(book);
+            Scanner scanner = new Scanner(System.in);
+            MainGui mainGui = new MainGui();
+            Print.log("Library Application ");
 
-            }
+
+            CrudDao<Book> bookCrudDao = new BookDao();
+            Book book = bookCrudDao.get(9781984819194L).get();
+//            book.setISBN(387943793474387834L);
+//            book.setAuthor("marcus aurelius");
+//            book.setTitre("Meditations: Penguin Classics");
+//            book.setISBN(6L);
+//            book.setQuantite(15);
+//            Book book1 = bookCrudDao.delete(book) ;
+//            Print.log(book1);
+
+
+//            if( book != null){
+//                Table.render(bookCrudDao.getAll(), Book.class).run();
+//            }
+                int mainChoice = 0;
+
+            do {
+                mainChoice = mainGui.displayOptions(scanner);
+                switch (mainChoice){
+                    case 1:
+                        // Book Management
+                        int bookChoice = new BookUseCase().displayOptions(scanner);
+                        break;
+                    case 2 :
+                        // Member Management
+                        int MemberChoice = new MemberUseCase().displayOptions(scanner);
+                        break;
+                    case 3 :
+                        // Loan Management
+                        int LoanChoice = new EmprunatUseCase().displayOptions(scanner);
+                        break;
+                }
+                Util.clearScreen();
+            }while (mainChoice > 0 && mainChoice < 4);
+
         }catch (SQLException e){
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
 
         }catch(Exception e){
-           Print.log("simple Catch");
-           Print.log(e.toString());
+            Print.log(e.toString());
         }
         finally {
 
-            Print.log("==========================");
-            Print.log("Finally");
+            Print.log("Finally Done ");
+           if (DatabaseConnection.getInstance().getConnection()!=null){
+               try{
+                   DatabaseConnection.getInstance().getConnection().close();
+               }catch (SQLException e){
+                   Print.log(e.toString());
+               }
+           }
+            boolean isClosed =DatabaseConnection.getInstance().getConnection().isClosed();
+            Print.log(isClosed);
         }
+
+
     }
 }
