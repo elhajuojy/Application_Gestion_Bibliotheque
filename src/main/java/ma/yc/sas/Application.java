@@ -7,14 +7,12 @@ import ma.yc.sas.GUI.MemberUseCase;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.core.Util;
 import ma.yc.sas.dao.CrudDao;
-import ma.yc.sas.dao.impl.BookDao;
+import ma.yc.sas.dao.impl.BookDaoImpl;
 import ma.yc.sas.dao.impl.MemberDoa;
 import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.model.Book;
 import ma.yc.sas.model.Member;
-import pl.mjaron.etudes.Table;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
 
@@ -25,7 +23,7 @@ public class Application {
             Scanner scanner = new Scanner(System.in);
             MainGui mainGui = new MainGui();
             Print.log("Library Application ");
-            CrudDao<Book> BookDao = new BookDao();
+            CrudDao<Book> BookDao = new BookDaoImpl();
             Book book = BookDao.get(9781984819194L).get();
 //            book.setISBN(387943793474387834L);
 //            book.setAuthor("marcus aurelius");
