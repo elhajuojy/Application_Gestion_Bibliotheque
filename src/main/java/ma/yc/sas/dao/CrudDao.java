@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface CrudDao<T> {
     
-    Optional<T> get(long id) throws SQLException;
+    Optional<T> get(long id) ;
     
     List<T> getAll();
     

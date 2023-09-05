@@ -1,11 +1,11 @@
 package ma.yc.sas.GUI;
 
-import com.mysql.cj.log.Log;
 import lombok.*;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.core.Util;
+import ma.yc.sas.dao.BookDao;
 import ma.yc.sas.dao.CrudDao;
-import ma.yc.sas.dao.impl.BookDao;
+import ma.yc.sas.dao.impl.BookDaoImpl;
 import ma.yc.sas.model.Book;
 import pl.mjaron.etudes.Table;
 
@@ -21,10 +21,12 @@ import java.util.Scanner;
 public class BookUseCase implements UserInterface {
 
     private CrudDao<Book> bookCrud ;
+    private BookDao bookDao ;
     private Book book = null;
 
     public BookUseCase() throws SQLException {
-        this.bookCrud = new BookDao();
+        this.bookCrud = new BookDaoImpl();
+        this.bookDao = new BookDaoImpl();
     }
 
     @Override
@@ -33,36 +35,79 @@ public class BookUseCase implements UserInterface {
         Print.log("\t 2- UPDATE BOOK");
         Print.log("\t 3- DELETE BOOK");
         Print.log("\t 4- GET ALL BOOKS");
-        Print.log("\t 5- FIND BOOKS BY ISBN");
+        Print.log("\t 5- FIND BOOKS BY ISBN , AUTHOR OU TITRE ");
         Print.log("\t 6- RETURN");
         int choice =  scanner.nextInt();
-        switch (choice){
-            case 1:
+        switch (choice) {
+            case 1 ->
                 // CREATE BOOK
-                this.createBook(scanner);
-            break;
-            case 2 :
+                    this.createBook(scanner);
+            case 2 ->
                 // UPDATE BOOK
-                this.updateBook(scanner);
-                break;
-            case 3 :
+                    this.updateBook(scanner);
+            case 3 ->
                 // DELETE BOOK
-                this.deleteBook(scanner);
-                break;
-            case 4:
+                    this.deleteBook(scanner);
+            case 4 ->
                 // GET ALL BOOKS
-                this.getAllBooks(scanner);
-                break;
-            case 5 :
+                    this.getAllBooks(scanner);
+            case 5 ->
                 // FIND BOOKS BY ISBN
-                this.findBookByIdISbn(scanner);
-                break;
-            case 6 :
+                    this.search(scanner);
+            case 6 ->
                 // RETURN
-                new MainGui().displayOptions(scanner);
-                break;
+                    new MainGui().displayOptions(scanner);
         }
         return  0;
+    }
+
+    private void search(Scanner scanner) {
+        Print.log("=== OPERATION RECHERCHE ===");
+        Print.log("\t\t 1- FIND BOOK BY ISBN");
+        Print.log("\t\t 2- FIND BOOK BY TITRE");
+        Print.log("\t\t 3- FIND BOOK BY AUTHOR");
+        Print.log("\t\t 4- RETURN");
+        int choice =  scanner.nextInt();
+        switch (choice){
+            case 1->
+                this.findBookByIdISbn(scanner);
+            case 2 ->
+                this.findBookBytitre(scanner);
+            case 3 ->
+                this.findyBookByAuthor(scanner);
+            default ->
+                    this.displayOptions(scanner);
+        }
+
+
+    }
+
+    private void findyBookByAuthor(Scanner scanner) {
+        Print.log("=== FIND BOOK BY AUTHOR ");
+        String author = Util.readString("AUTHOR ",scanner);
+        Optional<Book> bookOptional =  bookDao.finBookByAuthor(author);
+        if (bookOptional.isEmpty()){
+            Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+        }else {
+            Table.render(new Book[]{bookOptional.get()},Book.class).run();
+            Util.readString("Click Done ",scanner);
+            this.displayOptions(scanner);
+        }
+
+    }
+
+    private void findBookBytitre(Scanner scanner) {
+        Print.log("=== FIND BOOK BY TITRE ");
+        String titre = Util.readString("TITRE ",scanner);
+        Optional<Book> bookOptional =  bookDao.findBookByTitle(titre);
+        if (bookOptional.isEmpty()){
+            Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+        }else {
+            Table.render(new Book[]{bookOptional.get()},Book.class).run();
+            Util.readString("Click Done ",scanner);
+            this.displayOptions(scanner);
+        }
+
     }
 
 
@@ -97,18 +142,13 @@ public class BookUseCase implements UserInterface {
         scanner.nextLine();
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
-        try{
-            Optional<Book> bookOptional =  bookCrud.get(ISBN);
-            if (bookOptional.isEmpty()){
-                Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
-            }else {
-                Table.render(new Book[]{bookOptional.get()},Book.class).run();
-                Util.readString("Click Done ",scanner);
-                this.displayOptions(scanner);
-            }
-
-        }catch (SQLException e){
-            Print.log(e.toString() + " / " + e.getSQLState() + " / " + e.getStackTrace());
+        Optional<Book> bookOptional =  bookCrud.get(ISBN);
+        if (bookOptional.isEmpty()){
+            Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+        }else {
+            Table.render(new Book[]{bookOptional.get()},Book.class).run();
+            Util.readString("Click Done ",scanner);
+            this.displayOptions(scanner);
         }
 
     }
@@ -139,36 +179,32 @@ public class BookUseCase implements UserInterface {
         scanner.nextLine();
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
-        try{
-            Optional<Book> bookOptional =  bookCrud.get(ISBN);
-            if (bookOptional.isEmpty()){
-                Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
-            }else {
-               //START ASK ABOUT UPDATE BOOK
-                String titre = Util.readString("titre",scanner);
-                System.out.print("Quantite : ");
-                int quantite = scanner.nextInt(bookOptional.get().getQuantite());
-                String author = Util.readString("Author",scanner);
-                // CREATE BOOK
-                book = new Book();
-                book.setISBN(ISBN);
-                String[] params = {
-                        "TITRE", titre ,
-                        "AUTHOR", author,
-                        "QUANTITE" , String.valueOf(quantite)
-                };
-                Book book1 = this.bookCrud.update(book,params);
+        Optional<Book> bookOptional =  bookCrud.get(ISBN);
+        if (bookOptional.isEmpty()){
+            Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+        }else {
+           //START ASK ABOUT UPDATE BOOK
+            String titre = Util.readString("titre",scanner);
+            System.out.print("Quantite : ");
+            int quantite = scanner.nextInt(bookOptional.get().getQuantite());
+            String author = Util.readString("Author",scanner);
+            // CREATE BOOK
+            book = new Book();
+            book.setISBN(ISBN);
+            String[] params = {
+                    "TITRE", titre ,
+                    "AUTHOR", author,
+                    "QUANTITE" , String.valueOf(quantite)
+            };
+            Book book1 = this.bookCrud.update(book,params);
 
-                if (book1!=null){
-                    Print.log("THE BOOK HAS BEEN UPDATE SUCCESSFULLY ");
-                }else{
-                    Print.log("THERE'S A PROBLEM UPDATE THIS BOOK CHECK THE INFORMATION OR THE WRITE ISBN ");
-                }
-                this.displayOptions(scanner);
+            if (book1!=null){
+                Print.log("THE BOOK HAS BEEN UPDATE SUCCESSFULLY ");
+            }else{
+                Print.log("THERE'S A PROBLEM UPDATE THIS BOOK CHECK THE INFORMATION OR THE WRITE ISBN ");
             }
-
-        }catch (SQLException e){
-            Print.log(e.toString() + " / " + e.getSQLState() + " / " + e.getStackTrace());
+            this.displayOptions(scanner);
         }
+
     }
 }

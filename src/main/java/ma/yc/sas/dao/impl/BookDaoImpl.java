@@ -1,6 +1,7 @@
 package ma.yc.sas.dao.impl;
 
 import ma.yc.sas.core.Print;
+import ma.yc.sas.dao.BookDao;
 import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.mapper.Mapper;
@@ -16,26 +17,31 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class BookDao implements CrudDao<Book> {
+public class BookDaoImpl implements CrudDao<Book>, BookDao {
     List<Book> books = new ArrayList<>();
     Connection databaseConnection = DatabaseConnection.getInstance().getConnection() ;
     Mapper<Book> bookMapper = new BookMapperImpl() ;
     ResultSet resultSet ;
 
-    public BookDao() throws SQLException {
+    public BookDaoImpl() throws SQLException {
 
     }
 
     @Override
-    public Optional<Book> get(long id) throws SQLException {
-        String QUERY = "SELECT * FROM BOOK WHERE ISBN = ?";
-        PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
-        statement.setLong(1,id);
-        resultSet = statement.executeQuery();
-        while (resultSet.next()){
-            return Optional.of(bookMapper.toClassObject(resultSet));
+    public Optional<Book> get(long id)  {
+        try{
+            String QUERY = "SELECT * FROM BOOK WHERE ISBN = ?";
+            PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
+            statement.setLong(1,id);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                return Optional.of(bookMapper.toClassObject(resultSet));
+            }
+            resultSet.close();
         }
-        resultSet.close();
+        catch (SQLException e){
+            Print.log(e.toString());
+        }
         return Optional.empty();
     }
 
@@ -132,5 +138,43 @@ public class BookDao implements CrudDao<Book> {
             Print.log(e.getMessage());
         }
         return null;
+    }
+
+    @Override
+    public Optional<Book> finBookByAuthor(String authorname) {
+         try{
+             String QUERY = "SELECT * FROM BOOK WHERE AUTHOR = ?";
+             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
+             statement.setString(1,authorname);
+             resultSet = statement.executeQuery();
+             while (resultSet.next()){
+                 return Optional.of(bookMapper.toClassObject(resultSet));
+             }
+             resultSet.close();
+         }catch (SQLException e)
+         {
+            Print.log(e.toString());
+         }
+
+         return Optional.empty();
+    }
+
+    @Override
+    public Optional<Book> findBookByTitle(String title) {
+        try{
+            String QUERY = "SELECT * FROM BOOK WHERE TITRE = ?";
+            PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
+            statement.setString(1,title);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                return Optional.of(bookMapper.toClassObject(resultSet));
+            }
+            resultSet.close();
+        }catch (SQLException e)
+        {
+            Print.log(e.toString());
+        }
+
+        return Optional.empty();
     }
 }
