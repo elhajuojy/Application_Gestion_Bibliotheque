@@ -6,7 +6,7 @@ public class Util {
 
     public static long generatedLong() {
         long leftLimit = 1L;
-        long rightLimit = 10L;
+        long rightLimit = 100000000L;
         return leftLimit + (long) (Math.random() * (rightLimit - leftLimit));
     }
 

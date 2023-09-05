@@ -7,7 +7,7 @@ CREATE TABLE BOOK
     ISBN         BIGINT ,
     TITRE        VARCHAR(50),
     AUTHOR       VARCHAR(50),
-    QUANTITE    INT,
+    QUAN    TITE    INT,
     PRIMARY KEY (ISBN)
 );
 

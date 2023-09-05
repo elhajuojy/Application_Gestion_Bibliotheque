@@ -23,7 +23,6 @@ public class BookUseCase implements UserInterface {
     private CrudDao<Book> bookCrud ;
     private Book book = null;
 
-
     public BookUseCase() throws SQLException {
         this.bookCrud = new BookDao();
     }
@@ -48,11 +47,11 @@ public class BookUseCase implements UserInterface {
                 break;
             case 3 :
                 // DELETE BOOK
-                this.DeleteBook(scanner);
+                this.deleteBook(scanner);
                 break;
             case 4:
                 // GET ALL BOOKS
-                this.GetAllBooks(scanner);
+                this.getAllBooks(scanner);
                 break;
             case 5 :
                 // FIND BOOKS BY ISBN
@@ -114,7 +113,7 @@ public class BookUseCase implements UserInterface {
 
     }
 
-    private void GetAllBooks(Scanner scanner) {
+    private void getAllBooks(Scanner scanner) {
         Print.log("=== GET ALL BOOKS === ");
         List<Book> books = this.bookCrud.getAll();
         Table.render(books, Book.class).run();
@@ -122,7 +121,7 @@ public class BookUseCase implements UserInterface {
         this.displayOptions(scanner);
     }
 
-    private void DeleteBook(Scanner scanner) {
+    private void deleteBook(Scanner scanner) {
         Print.log("=== DELETE BOOK BY ISBN ===");
         scanner.nextLine();
         System.out.print("ISBN : ");

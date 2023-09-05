@@ -124,7 +124,10 @@ public class BookDao implements CrudDao<Book> {
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
             statement.setLong(1,book.getISBN());
-            statement.executeUpdate();
+            int deletedRecored = statement.executeUpdate();
+            if (deletedRecored == 1){
+                return  book;
+            }
         }catch (SQLException e){
             Print.log(e.getMessage());
         }
