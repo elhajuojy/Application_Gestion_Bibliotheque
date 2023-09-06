@@ -12,7 +12,7 @@ public class BookMapperImpl implements Mapper<Book> {
     public Book toClassObject(ResultSet resultSet) {
 
        try {
-             Book book = new Book();
+           Book book = new Book();
            book.setISBN(resultSet.getLong("ISBN"));
            book.setQuantite(resultSet.getInt("QUANTITE"));
            book.setTitre(resultSet.getString("TITRE"));

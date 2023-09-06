@@ -2,12 +2,12 @@ package ma.yc.sas.dao.impl;
 
 import ma.yc.sas.Enums.Availability;
 import ma.yc.sas.core.Print;
-import ma.yc.sas.dao.BookDao;
-import ma.yc.sas.database.DatabaseConnection;
+import ma.yc.sas.dao.BookExampleDao;
 import ma.yc.sas.dao.CrudDao;
+import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.mapper.Mapper;
-import ma.yc.sas.mapper.impl.BookMapperImpl;
-import ma.yc.sas.model.Book;
+import ma.yc.sas.mapper.impl.BookExampleMapperImpl;
+import ma.yc.sas.model.BookExample;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,26 +17,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+public class BookExampleDaoImpl implements CrudDao<BookExample> , BookExampleDao {
 
-public class BookDaoImpl implements CrudDao<Book>, BookDao {
-    List<Book> books = new ArrayList<>();
+    List<BookExample> bookExamples  = new ArrayList<>();
     Connection databaseConnection = DatabaseConnection.getInstance().getConnection() ;
-    Mapper<Book> bookMapper = new BookMapperImpl() ;
+    Mapper<BookExample> bookExampleMapper = new BookExampleMapperImpl() ;
     ResultSet resultSet ;
 
-    public BookDaoImpl() throws SQLException {
-
+    public BookExampleDaoImpl() throws SQLException {
     }
 
+
+
+
     @Override
-    public Optional<Book> get(long id)  {
+    public Optional<BookExample> get(long id) {
         try{
-            String QUERY = "SELECT * FROM BOOK WHERE ISBN = ?";
+            String QUERY = "SELECT * FROM BOOK_EXAMPLE WHERE ID = ? ;";
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
-            statement.setLong(1,id);
+            statement.setInt(1,(int)id);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
-                return Optional.of(bookMapper.toClassObject(resultSet));
+                return Optional.of(bookExampleMapper.toClassObject(resultSet));
             }
             resultSet.close();
         }
@@ -47,15 +49,15 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
     }
 
     @Override
-    public List<Book> getAll() {
-        String QUERY = "SELECT * FROM BOOK ";
+    public List<BookExample> getAll() {
+        String QUERY = "SELECT * FROM BOOK_EXAMPLE ; ";
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
-                books.add(bookMapper.toClassObject(resultSet));
+                bookExamples.add(bookExampleMapper.toClassObject(resultSet));
             }
-            return  this.books;
+            return  this.bookExamples;
 
         }catch (SQLException e){
             Print.log(e.toString());
@@ -63,16 +65,14 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
         return null;
     }
 
-
-
     @Override
-    public Book save(Book book) {
-        String QUERY = "INSERT INTO BOOK ( ISBN , QUANTITE, TITRE, AUTHOR) VALUES (?, ?, ?,?) ;";
+    public BookExample save(BookExample bookExample) {
+        String QUERY = "INSERT INTO BOOK_EXAMPLE ( ISBN ,AVAILABILITY ) VALUES (?, ?) ;";
         try{
-            PreparedStatement statement = bookMapper.PreparedStatement(book,databaseConnection.prepareStatement(QUERY));
+            PreparedStatement statement = bookExampleMapper.PreparedStatement(bookExample,databaseConnection.prepareStatement(QUERY));
             int saveRecored = statement.executeUpdate();
             if (saveRecored == 1){
-                return  book;
+                return  bookExample;
             }
 
         }catch (Exception e){
@@ -82,13 +82,12 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
     }
 
     @Override
-    public Book update(Book book, String[] params) {
+    public BookExample update(BookExample bookExample, String[] params) {
         if (params == null || params.length % 2 != 0) {
             // Ensure params is not null and contains an even number of elements (key-value pairs)
             throw new IllegalArgumentException("Invalid params array");
         }
-
-        StringBuilder queryBuilder = new StringBuilder("UPDATE BOOK SET ");
+        StringBuilder queryBuilder = new StringBuilder("UPDATE BOOK_EXAMPLE SET ");
         List<Object> values = new ArrayList<>();
 
         for (int i = 0; i < params.length; i += 2) {
@@ -102,9 +101,8 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
             values.add(value);
         }
 
-        queryBuilder.append(" WHERE `ISBN` = ?");
-        values.add(book.getISBN());
-
+        queryBuilder.append(" WHERE `ID` = ?");
+        values.add(bookExample.getId());
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(queryBuilder.toString());
             for (int i = 0; i < values.size(); i++) {
@@ -113,7 +111,7 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
             int rowsUpdated = statement.executeUpdate();
 
             if (rowsUpdated == 1){
-                return book;
+                return bookExample;
             }
         }catch (SQLException e){
             Print.log(e.toString());
@@ -126,14 +124,14 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
     }
 
     @Override
-    public Book delete(Book book) {
-        String QUERY = "DELETE FROM BOOK WHERE ISBN = ?";
+    public BookExample delete(BookExample bookExample) {
+        String QUERY = "DELETE FROM BOOK_EXAMPLE WHERE ID = ?";
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
-            statement.setLong(1,book.getISBN());
+            statement.setLong(1,bookExample.getId());
             int deletedRecored = statement.executeUpdate();
             if (deletedRecored == 1){
-                return  book;
+                return  bookExample;
             }
         }catch (SQLException e){
             Print.log(e.getMessage());
@@ -142,44 +140,48 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
     }
 
     @Override
-    public Optional<Book> finBookByAuthor(String authorname) {
-         try{
-             String QUERY = "SELECT * FROM BOOK WHERE AUTHOR = ?";
-             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
-             statement.setString(1,authorname);
-             resultSet = statement.executeQuery();
-             while (resultSet.next()){
-                 return Optional.of(bookMapper.toClassObject(resultSet));
-             }
-             resultSet.close();
-         }catch (SQLException e)
-         {
+    public List<BookExample> findAvailableeBooks(Availability availability) {
+        try{
+            String QUERY = "SELECT * FROM BOOK_EXAMPLE WHERE AVAILABILITY = ? ;";
+            PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
+            String availabilityValue = availability.name();
+            statement.setString(1,availabilityValue);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                bookExamples.add(bookExampleMapper.toClassObject(resultSet));
+            }
+            resultSet.close();
+            return  this.bookExamples;
+        }
+        catch (SQLException e){
             Print.log(e.toString());
-         }
-
-         return Optional.empty();
+        }
+        return  null;
     }
 
     @Override
-    public Optional<Book> findBookByTitle(String title) {
+    public List<BookExample> findAllBooksExampleByIsbn(long isbn) {
         try{
-            String QUERY = "SELECT * FROM BOOK WHERE TITRE = ?";
+            String QUERY = "SELECT * FROM BOOK_EXAMPLE WHERE ISBN = ? ;";
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
-            statement.setString(1,title);
+            statement.setLong(1,isbn);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
-                return Optional.of(bookMapper.toClassObject(resultSet));
+                bookExamples.add(bookExampleMapper.toClassObject(resultSet));
             }
             resultSet.close();
-        }catch (SQLException e)
-        {
+            return  this.bookExamples;
+        }
+        catch (SQLException e){
             Print.log(e.toString());
         }
-
-        return Optional.empty();
+        return  null;
     }
 
-
-
-
+    @Override
+    public BookExample updateBookExampleStatus(BookExample bookExample, Availability availability) {
+        String[] params = {"AVAILABILITY", availability.toString()};
+        this.update(bookExample,params);
+        return null;
+    }
 }

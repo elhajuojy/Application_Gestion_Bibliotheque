@@ -8,10 +8,13 @@ import ma.yc.sas.core.Print;
 import ma.yc.sas.core.Util;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.dao.impl.BookDaoImpl;
+import ma.yc.sas.dao.impl.BookExampleDaoImpl;
 import ma.yc.sas.dao.impl.MemberDoa;
 import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.model.Book;
+import ma.yc.sas.model.BookExample;
 import ma.yc.sas.model.Member;
+import pl.mjaron.etudes.Table;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -34,9 +37,10 @@ public class Application {
 //            Print.log(book1);
 
             CrudDao<Member> memberDoa = new MemberDoa();
+            CrudDao<BookExample> bookExampleCrudDao = new BookExampleDaoImpl();
 
 //            if( book != null){
-//                Table.render(memberDoa.getAll(), Member.class).run();
+//                Table.render(bookExampleCrudDao.getAll(), BookExample.class).run();
 //            }
                 int mainChoice = 0;
 
