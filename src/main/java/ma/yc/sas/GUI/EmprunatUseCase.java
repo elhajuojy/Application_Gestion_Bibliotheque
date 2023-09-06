@@ -68,7 +68,6 @@ public class EmprunatUseCase implements UserInterface{
         //if you want to declare book lost
         // first ask for isbn than show all book example and than
         // ask for the book id to make it lost ()
-
         Print.log("=== DECLARE BOOK AS LOST ===");
         scanner.nextLine();
         System.out.print("ISBN : ");
@@ -76,15 +75,23 @@ public class EmprunatUseCase implements UserInterface{
         List<BookExample> bookExamples = this.bookExample.findAllBooksExampleByIsbn(ISBN);
         Table.render(bookExamples,BookExample.class).run();
         //than ask for book id and change the book status to lost
-        System.out.println("ENTRE BOOK EXAMPLE ID SO YOU CAN CHANGE IT TO LOST ");
-        System.out.print("ID : ");
-        long id= scanner.nextLong();
-        BookExample bookExample1 = new BookExample();
-        String[] params={
-                "AVAILABILITY",Availability.LOST.toString()
-        };
-        bookExample1.setId(id);
-        this.bookExampleDaoCrudDao.update(bookExample1,params);
+        if(bookExamples.size() >0 ){
+            System.out.println("ENTRE BOOK EXAMPLE ID SO YOU CAN CHANGE IT TO LOST ");
+            System.out.print("ID : ");
+            long id= scanner.nextLong();
+            BookExample bookExample1 = new BookExample();
+            String[] params={
+                    "AVAILABILITY",Availability.LOST.toString()
+            };
+            bookExample1.setId(id);
+            this.bookExampleDaoCrudDao.update(bookExample1,params);
+            Print.log("THE BOOK LOST  WITH ID :"+ id);
+
+        }else{
+            System.out.println("THIS BOOK DOESN'T HAVE EXAMPLES IN ");
+        }
+
+
         this.displayOptions(scanner);
 
 
