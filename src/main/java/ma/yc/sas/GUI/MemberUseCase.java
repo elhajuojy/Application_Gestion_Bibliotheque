@@ -6,6 +6,7 @@ import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.dao.impl.MemberDoa;
 import ma.yc.sas.model.Book;
 import ma.yc.sas.model.Member;
+import pl.mjaron.etudes.Table;
 
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -55,9 +56,13 @@ public class MemberUseCase implements UserInterface{
     }
 
     private void getAllMembers(Scanner scanner) {
+        Print.log("=== All Members ===");
+        Table.render(this.memberDao.getAll(), Member.class).run();
+        this.displayOptions(scanner);
     }
 
     private void deleteMember(Scanner scanner) {
+
     }
 
     private void updateMemeber(Scanner scanner) {

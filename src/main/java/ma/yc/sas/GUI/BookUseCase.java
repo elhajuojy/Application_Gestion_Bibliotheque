@@ -1,12 +1,15 @@
 package ma.yc.sas.GUI;
 
 import lombok.*;
+import ma.yc.sas.Enums.Availability;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.core.Util;
 import ma.yc.sas.dao.BookDao;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.dao.impl.BookDaoImpl;
+import ma.yc.sas.dao.impl.BookExampleDaoImpl;
 import ma.yc.sas.model.Book;
+import ma.yc.sas.model.BookExample;
 import pl.mjaron.etudes.Table;
 
 import java.sql.SQLException;
@@ -23,20 +26,25 @@ public class BookUseCase implements UserInterface {
     private CrudDao<Book> bookCrud ;
     private BookDao bookDao ;
     private Book book = null;
+    private BookExampleDaoImpl bookExampleDao;
 
     public BookUseCase() throws SQLException {
         this.bookCrud = new BookDaoImpl();
         this.bookDao = new BookDaoImpl();
+        this.bookExampleDao = new BookExampleDaoImpl();
     }
 
     @Override
     public int displayOptions(Scanner scanner) {
         Print.log("\t 1- CREATE BOOK");
         Print.log("\t 2- UPDATE BOOK");
-        Print.log("\t 3- DELETE BOOK");
-        Print.log("\t 4- GET ALL BOOKS");
-        Print.log("\t 5- FIND BOOKS BY ISBN , AUTHOR OU TITRE ");
-        Print.log("\t 6- RETURN");
+        Print.log("\t 3- UPDATE BOOK STATUS");
+        Print.log("\t 4- DELETE BOOK");
+        Print.log("\t 5- GET ALL BOOKS");
+        Print.log("\t 6- FIND BOOKS BY ISBN , AUTHOR OU TITRE ");
+        Print.log("\t 7- SHOW ALL AVAILABLE BOOKS ");
+        Print.log("\t 8- FIND LOST BOOKS  ");
+        Print.log("\t 9- RETURN");
         int choice =  scanner.nextInt();
         switch (choice) {
             case 1 ->
@@ -46,19 +54,40 @@ public class BookUseCase implements UserInterface {
                 // UPDATE BOOK
                     this.updateBook(scanner);
             case 3 ->
+                    this.showAvailableBooks(scanner,Availability.AVAILABLE);
+            case 4 ->
                 // DELETE BOOK
                     this.deleteBook(scanner);
-            case 4 ->
+            case 5 ->
                 // GET ALL BOOKS
                     this.getAllBooks(scanner);
-            case 5 ->
+            case 6 ->
                 // FIND BOOKS BY ISBN
                     this.search(scanner);
-            case 6 ->
+            case 7 ->
+                // FIND BOOKS BY ISBN
+                    this.findBookByIdISbn(scanner);
+            case 8 ->
+                // RETURN
+                    this.showAvailableBooks(scanner,Availability.LOST);
+            case 9 ->
                 // RETURN
                     new MainGui().displayOptions(scanner);
         }
         return  0;
+    }
+
+    private void findLostBooks(Scanner scanner) {
+    }
+
+    private void updateBookStatus(Scanner scanner) {
+        //
+    }
+
+    private void showAvailableBooks(Scanner scanner , Availability availability) {
+        //affiche les livre disponible
+        Print.log("=== LIST OF BOOKS  "+ availability.toString()+ " ===");
+        Table.render(this.getBookExampleDao().findAvailableeBooks(availability), BookExample.class).run();
     }
 
     private void search(Scanner scanner) {
@@ -129,9 +158,17 @@ public class BookUseCase implements UserInterface {
         book.setTitre(titre);
         book.setQuantite(quantite);
 
+
         if ( bookCrud.save(book) != null){
             Print.log("=== the book have been add with success ===");
             Print.log(book.toString());
+            //Save Books examples with available status as defualt
+            BookExample bookExample = new BookExample();
+            bookExample.setBook(book);
+            bookExample.setAvailability(Availability.AVAILABLE);
+            for (int i=0;i<quantite;i++){
+                this.bookExampleDao.save(bookExample);
+            }
         }
         Print.log("THIS A PROBLEM SAVING THIS BOOK PLEASE CHECK THE INFORMATION AGAIN");
         this.displayOptions(scanner);
