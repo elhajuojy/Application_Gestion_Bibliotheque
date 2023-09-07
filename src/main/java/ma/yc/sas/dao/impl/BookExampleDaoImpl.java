@@ -1,6 +1,6 @@
 package ma.yc.sas.dao.impl;
 
-import ma.yc.sas.Enums.Availability;
+import ma.yc.sas.enums.Availability;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.dao.BookExampleDao;
 import ma.yc.sas.dao.CrudDao;
@@ -146,6 +146,27 @@ public class BookExampleDaoImpl implements CrudDao<BookExample> , BookExampleDao
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
             String availabilityValue = availability.name();
             statement.setString(1,availabilityValue);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                bookExamples.add(bookExampleMapper.toClassObject(resultSet));
+            }
+            resultSet.close();
+            return  this.bookExamples;
+        }
+        catch (SQLException e){
+            Print.log(e.toString());
+        }
+        return  null;
+    }
+
+    @Override
+    public List<BookExample> findAvailableeBooks(Long ISBN, Availability availability) {
+        try{
+            String QUERY = "SELECT * FROM BOOK_EXAMPLE WHERE AVAILABILITY = ? AND ISBN = ?;";
+            PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
+            String availabilityValue = availability.name();
+            statement.setString(1,availabilityValue);
+            statement.setLong(2,ISBN);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
                 bookExamples.add(bookExampleMapper.toClassObject(resultSet));

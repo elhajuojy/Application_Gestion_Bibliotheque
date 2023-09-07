@@ -1,24 +1,44 @@
 package ma.yc.sas.GUI;
 
-import ma.yc.sas.Enums.Availability;
+import ma.yc.sas.core.Util;
+import ma.yc.sas.dao.impl.BookDaoImpl;
+import ma.yc.sas.dao.impl.EmpruntDao;
+import ma.yc.sas.dao.impl.MemberDoa;
+import ma.yc.sas.enums.Availability;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.dao.BookExampleDao;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.dao.impl.BookExampleDaoImpl;
+import ma.yc.sas.model.Book;
 import ma.yc.sas.model.BookExample;
+import ma.yc.sas.model.Emprunt;
+import ma.yc.sas.model.Member;
 import pl.mjaron.etudes.Table;
 
+import javax.sound.midi.MetaMessage;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Scanner;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.*;
 
 public class EmprunatUseCase implements UserInterface{
 
     private Scanner scanner ;
-    private BookExampleDao bookExample = new BookExampleDaoImpl();
-    private CrudDao<BookExample> bookExampleDaoCrudDao = new BookExampleDaoImpl();
+    private BookExampleDao bookExample;
+    private CrudDao<Book> bookCrudDao ;
+    private CrudDao<Member> memberCrudDao ;
+    private CrudDao<BookExample> bookExampleDaoCrudDao ;
+    private CrudDao<Emprunt> empruntCrudDao ;
+    private   List<BookExample> bookExamples = new ArrayList<>();
 
     public EmprunatUseCase() throws SQLException {
+        this.bookExample   = new BookExampleDaoImpl();
+        this.bookCrudDao  = new BookDaoImpl();
+        this.memberCrudDao = new MemberDoa();
+        this.bookExampleDaoCrudDao= new BookExampleDaoImpl();
+        this.empruntCrudDao = new EmpruntDao();
+
+
     }
 
     @Override
@@ -46,46 +66,108 @@ public class EmprunatUseCase implements UserInterface{
         return  0;
     }
     public  void loanBook(){
-
+        Print.log(" === EMPRUNT LIVRE ===");
         //if you want to loan
             // need book
-                // CHECK IF THE BOOK IS AVAILABLE
-                    // SHOW MESSAGE
-                //
-            // NEED MEMBER
-                // CHECK IF THE MEMBER EXISTS
-            // DATE LOAN
-                //DATE NOW
-
-
-
-    }
-    public void returnBook(){
-
-    }
-
-    public void declareBookLost(){
-        //if you want to declare book lost
-        // first ask for isbn than show all book example and than
-        // ask for the book id to make it lost ()
-        Print.log("=== DECLARE BOOK AS LOST ===");
         scanner.nextLine();
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
-        List<BookExample> bookExamples = this.bookExample.findAllBooksExampleByIsbn(ISBN);
+        Optional<Book> bookOptional =  bookCrudDao.get(ISBN);
+        if (bookOptional.isEmpty()){
+            Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+        }else {
+            Table.render(new Book[]{bookOptional.get()},Book.class).run();
+            //check if book is available first
+            //select all books copies where ISBN = ISBN WE PROVIDE
+            try{
+                BookExampleDao bookExampleDao = new BookExampleDaoImpl();
+
+                if (this.bookExamples.size()==0){
+                    this.bookExamples =  bookExampleDao.findAvailableeBooks(ISBN,Availability.AVAILABLE);
+                }
+                Table.render(bookExamples,BookExample.class).run();
+                // check if there's available book
+                if (bookExamples.isEmpty()){
+                    //if all books are not_available of lost return that the member can't loan the books
+                    Print.log("books copies are not available  sorry ");
+                    return;
+                }
+                //else ask for user information and than and only than loan the book
+                Print.log("=== PLEASE ENTRE UR MEMBERSHIP ID :");
+//                NUMERO_MEMBRE
+                int numero_membre = scanner.nextInt();
+                Optional<Member> member = this.memberCrudDao.get(numero_membre);
+                if (member.isEmpty()){
+                    Print.log("THIS MEMBER DOESN'T EXISTS IN DATABASE MAKE SURE TO WRITE THE GOOD ID ");
+                    return;
+                }
+
+                Print.log(member.toString());
+                // now i  have book example and user id
+                // insert user id and book id in emprunt table  database
+                // return date always should be after 15 jour
+                Emprunt emprunt = new Emprunt();
+                emprunt.setBookExamples(List.of(bookExamples.get(0)));
+                emprunt.setMember(member.get());
+                Calendar calendar = Calendar.getInstance();
+                // Add 15 days to the current date
+                calendar.add(Calendar.DAY_OF_MONTH, 15);
+                // Get the new date
+                Date newDate = calendar.getTime();
+                emprunt.setDateEmprunt(null);
+                emprunt.setDateRoutour(null);
+                Emprunt emprunt1 = this.empruntCrudDao.save(emprunt);
+                this.bookExample.updateBookExampleStatus(bookExamples.get(0),Availability.NOT_AVAILABLE);
+
+                if (emprunt1 !=null){
+                    Print.log("THANK U FOR YOUR WAITING ENJOY READING ");
+                }
+
+
+            }catch (SQLException e){
+                Print.log(e.toString());
+            }
+
+            //now ask for user information
+
+            this.displayOptions(scanner);
+        }
+
+    }
+    public void returnBook(){
+        //9780451524935
+        //same as declare book but with update action to available
+        this.declareBook(Availability.AVAILABLE);
+    }
+
+    public void declareBookLost(){
+        this.declareBook(Availability.LOST);
+    }
+
+    public void declareBook(Availability availability){
+        //if you want to declare book lost
+        // first ask for isbn than show all book example and than
+        // ask for the book id to make it lost ()
+        Print.log("=== DECLARE BOOK AS "+availability.toString()+" ===");
+        scanner.nextLine();
+        System.out.print("ISBN : ");
+        long ISBN = scanner.nextLong();
+            if (this.bookExamples.size()==0){
+                this.bookExamples  = this.bookExample.findAllBooksExampleByIsbn(ISBN);
+            }
         Table.render(bookExamples,BookExample.class).run();
         //than ask for book id and change the book status to lost
         if(bookExamples.size() >0 ){
-            System.out.println("ENTRE BOOK EXAMPLE ID SO YOU CAN CHANGE IT TO LOST ");
+            System.out.println("ENTRE BOOK EXAMPLE ID SO YOU CAN CHANGE IT TO "+availability.toString()+" ");
             System.out.print("ID : ");
             long id= scanner.nextLong();
             BookExample bookExample1 = new BookExample();
             String[] params={
-                    "AVAILABILITY",Availability.LOST.toString()
+                    "AVAILABILITY",availability.toString()
             };
             bookExample1.setId(id);
             this.bookExampleDaoCrudDao.update(bookExample1,params);
-            Print.log("THE BOOK LOST  WITH ID :"+ id);
+            Print.log("THE BOOK "+availability.toString()+"  WITH ID :"+ id);
 
         }else{
             System.out.println("THIS BOOK DOESN'T HAVE EXAMPLES IN ");
@@ -99,4 +181,5 @@ public class EmprunatUseCase implements UserInterface{
 
 
     }
+
 }

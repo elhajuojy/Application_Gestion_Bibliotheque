@@ -1,7 +1,7 @@
 package ma.yc.sas.model;
 
 import lombok.*;
-import ma.yc.sas.Enums.Availability;
+import ma.yc.sas.enums.Availability;
 
 
 @Data

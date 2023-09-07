@@ -12,7 +12,8 @@ public class MainGui implements UserInterface{
         Print.log("1 . Book Management");
         Print.log("2 . Member Management");
         Print.log("3 . Loan Management");
-        Print.log("4 . Exit");
+        Print.log("4 . Statistiques");
+        Print.log("5 . Exit");
         return scanner.nextInt();
     }
 }

@@ -10,7 +10,7 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
     private String url = "jdbc:mysql://localhost:3306/LIBRARY";
-    private String username = "user";
+    private String username = "root";
     private String password = "password";
     private String driver = "com.mysql.cj.jdbc.Driver";
 

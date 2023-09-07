@@ -1,12 +1,10 @@
 package ma.yc.sas.model;
 
 import lombok.*;
-import ma.yc.sas.Enums.Availability;
 import ma.yc.sas.core.Util;
-import ma.yc.sas.mapper.DatabaseObjectMapper;
 
-import java.sql.ResultSet;
 import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,6 +20,8 @@ public class Book  {
     private Long ISBN;
     @NonNull
     private String author;
+
+    private List<BookExample> bookExamples = null;
 
 
     public void GenerateIsbn(){
