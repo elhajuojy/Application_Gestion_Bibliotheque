@@ -1,6 +1,5 @@
 package ma.yc.sas.dao.impl;
 
-import ma.yc.sas.Enums.Availability;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.dao.BookDao;
 import ma.yc.sas.database.DatabaseConnection;

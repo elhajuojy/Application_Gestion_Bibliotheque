@@ -1,6 +1,6 @@
 package ma.yc.sas.mapper.impl;
 
-import ma.yc.sas.Enums.Availability;
+import ma.yc.sas.enums.Availability;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.dao.impl.BookDaoImpl;

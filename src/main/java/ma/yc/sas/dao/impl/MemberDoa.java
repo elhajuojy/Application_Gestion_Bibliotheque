@@ -29,10 +29,10 @@ public class MemberDoa implements CrudDao<Member> {
 
     @Override
     public Optional<Member> get(long id) {
-        String QUERY = "SELECT * FROM MEMBER WHERE NOM = ?";
+        String QUERY = "SELECT * FROM MEMBER WHERE NUMERO_MEMBRE = ?";
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
-            statement.setLong(1,id);
+            statement.setInt(1,(int) id);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
                 return Optional.of(memberMapper.toClassObject(resultSet));

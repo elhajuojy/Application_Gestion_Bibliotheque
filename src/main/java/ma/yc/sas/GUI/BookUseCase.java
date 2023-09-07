@@ -1,7 +1,7 @@
 package ma.yc.sas.GUI;
 
 import lombok.*;
-import ma.yc.sas.Enums.Availability;
+import ma.yc.sas.enums.Availability;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.core.Util;
 import ma.yc.sas.dao.BookDao;
@@ -10,9 +10,11 @@ import ma.yc.sas.dao.impl.BookDaoImpl;
 import ma.yc.sas.dao.impl.BookExampleDaoImpl;
 import ma.yc.sas.model.Book;
 import ma.yc.sas.model.BookExample;
+import pl.mjaron.etudes.Arr;
 import pl.mjaron.etudes.Table;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -31,6 +33,7 @@ public class BookUseCase implements UserInterface {
     public BookUseCase() throws SQLException {
         this.bookCrud = new BookDaoImpl();
         this.bookDao = new BookDaoImpl();
+        this.book = new Book();
         this.bookExampleDao = new BookExampleDaoImpl();
     }
 
@@ -161,16 +164,13 @@ public class BookUseCase implements UserInterface {
 
         if ( bookCrud.save(book) != null){
             Print.log("=== the book have been add with success ===");
-            Print.log(book.toString());
-            //Save Books examples with available status as defualt
-            BookExample bookExample = new BookExample();
-            bookExample.setBook(book);
-            bookExample.setAvailability(Availability.AVAILABLE);
-            for (int i=0;i<quantite;i++){
-                this.bookExampleDao.save(bookExample);
-            }
+            Table.render(new Book[]{book},Book.class).run();
+            Util.readString("Click Done ",scanner);
+
         }
-        Print.log("THIS A PROBLEM SAVING THIS BOOK PLEASE CHECK THE INFORMATION AGAIN");
+        else {
+            Print.log("THIS A PROBLEM SAVING THIS BOOK PLEASE CHECK THE INFORMATION AGAIN");
+        }
         this.displayOptions(scanner);
     }
 
@@ -200,11 +200,12 @@ public class BookUseCase implements UserInterface {
 
     private void deleteBook(Scanner scanner) {
         Print.log("=== DELETE BOOK BY ISBN ===");
-        scanner.nextLine();
+//        scanner.nextLine();
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
         this.book.setISBN(ISBN);
-        this.book = this.bookCrud.delete(this.book);
+        Book book1 = this.bookCrud.delete(this.book);
+        this.book = book1;
         if (this.book == null){
             Print.log("CAN NOT DELETE THIS BOOK MAKE SURE THIS BOOK EXISTS OR PROVIDE THE CORRECT ISBN");
         }

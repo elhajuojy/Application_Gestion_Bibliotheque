@@ -1,4 +1,4 @@
-package ma.yc.sas.Enums;
+package ma.yc.sas.enums;
 
 public enum Availability {
 
