@@ -37,8 +37,6 @@ public class EmprunatUseCase implements UserInterface{
         this.memberCrudDao = new MemberDoa();
         this.bookExampleDaoCrudDao= new BookExampleDaoImpl();
         this.empruntCrudDao = new EmpruntDao();
-
-
     }
 
     @Override
