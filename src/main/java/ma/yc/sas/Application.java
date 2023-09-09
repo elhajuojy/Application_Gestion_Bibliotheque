@@ -1,9 +1,6 @@
 package ma.yc.sas;
 
-import ma.yc.sas.GUI.BookUseCase;
-import ma.yc.sas.GUI.EmprunatUseCase;
-import ma.yc.sas.GUI.MainGui;
-import ma.yc.sas.GUI.MemberUseCase;
+import ma.yc.sas.GUI.*;
 import ma.yc.sas.core.Print;
 import ma.yc.sas.core.Util;
 import ma.yc.sas.dao.CrudDao;
@@ -58,6 +55,9 @@ public class Application {
                     case 3 -> {
                         // Loan Management
                         int LoanChoice = new EmprunatUseCase().displayOptions(scanner);
+                    }
+                    case 4 ->{
+                        int statistiqueChoice = new StatistiqueUseCase().displayOptions(scanner);
                     }
                 }
                 Util.clearScreen();

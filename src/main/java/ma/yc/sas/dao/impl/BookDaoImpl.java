@@ -2,11 +2,13 @@ package ma.yc.sas.dao.impl;
 
 import ma.yc.sas.core.Print;
 import ma.yc.sas.dao.BookDao;
+import ma.yc.sas.dao.BookExampleDao;
 import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.mapper.Mapper;
 import ma.yc.sas.mapper.impl.BookMapperImpl;
 import ma.yc.sas.model.Book;
+import ma.yc.sas.model.BookExample;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,12 +21,15 @@ import java.util.Optional;
 
 public class BookDaoImpl implements CrudDao<Book>, BookDao {
     List<Book> books = new ArrayList<>();
-    Connection databaseConnection = DatabaseConnection.getInstance().getConnection() ;
-    Mapper<Book> bookMapper = new BookMapperImpl() ;
+    Connection databaseConnection ;
+    Mapper<Book> bookMapper ;
     ResultSet resultSet ;
+    BookExampleDao bookExampleDao ;
 
     public BookDaoImpl() throws SQLException {
-
+        this.databaseConnection = DatabaseConnection.getInstance().getConnection() ;
+        this.bookMapper  = new BookMapperImpl() ;
+        this.bookExampleDao = new BookExampleDaoImpl();
     }
 
     @Override
@@ -47,12 +52,20 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
 
     @Override
     public List<Book> getAll() {
-        String QUERY = "SELECT * FROM BOOK ";
+        String QUERY = "SELECT * FROM BOOK";
         try{
             PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
             resultSet = statement.executeQuery();
             while (resultSet.next()){
-                books.add(bookMapper.toClassObject(resultSet));
+                Book book = bookMapper.toClassObject(resultSet) ;
+                // need to get all book bookExamples ;
+                // the thing is i will use the book-example dto to getAll books with this isbn and
+                //mappe  list book-examples to to book
+                List<BookExample> bookExamples = this.bookExampleDao.findAllBooksExampleByIsbn(resultSet.getLong("ISBN"));
+                book.setBookExamples(bookExamples);
+                books.add(book);
+                //
+
             }
             return  this.books;
 
@@ -61,6 +74,8 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
         }
         return null;
     }
+
+
 
 
 
