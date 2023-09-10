@@ -25,7 +25,7 @@ public class MemberUseCase implements UserInterface{
         Print.log("\t 2- UPDATE MEMBER");
         Print.log("\t 3- DELETE MEMBER");
         Print.log("\t 4- GET ALL MEMBER");
-        Print.log("\t 5- FIND MEMBER BY NOM");
+        Print.log("\t 5- FIND MEMBER BY NAME");
         Print.log("\t 6- RETURN");
         int choice =  scanner.nextInt();
         switch (choice) {

@@ -61,8 +61,32 @@ public class BookDaoImpl implements CrudDao<Book>, BookDao {
                 // need to get all book bookExamples ;
                 // the thing is i will use the book-example dto to getAll books with this isbn and
                 //mappe  list book-examples to to book
-                List<BookExample> bookExamples = this.bookExampleDao.findAllBooksExampleByIsbn(resultSet.getLong("ISBN"));
-                book.setBookExamples(bookExamples);
+                books.add(book);
+                //
+
+            }
+            return  this.books;
+
+        }catch (SQLException e){
+            Print.log(e.toString());
+        }
+        return null;
+    }
+    @Override
+    public List<Book> getAll(boolean lazyLoading) {
+        String QUERY = "SELECT * FROM BOOK";
+        try{
+            PreparedStatement statement = databaseConnection.prepareStatement(QUERY);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()){
+                Book book = bookMapper.toClassObject(resultSet) ;
+                // need to get all book bookExamples ;
+                // the thing is i will use the book-example dto to getAll books with this isbn and
+                //mappe  list book-examples to to book
+                if (lazyLoading){
+                    List<BookExample> bookExamples = this.bookExampleDao.findAllBooksExampleByIsbn(resultSet.getLong("ISBN"));
+                    book.setBookExamples(bookExamples);
+                }
                 books.add(book);
                 //
 

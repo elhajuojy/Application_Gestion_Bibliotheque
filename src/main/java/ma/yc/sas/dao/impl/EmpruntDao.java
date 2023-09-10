@@ -37,6 +37,11 @@ public class EmpruntDao implements CrudDao<Emprunt> {
     }
 
     @Override
+    public List<Emprunt> getAll(boolean lazyLoading) {
+        return null;
+    }
+
+    @Override
     public Emprunt save(Emprunt emprunt) {
         String QUERY = "INSERT INTO EMPRUNT ( NUMERO_MEMBRE , BOOK_EXAMPLE , DATE_EMPRUNT , DATE_ROUTOUR ) VALUES (?, ?, ?,?) ;";
         try{

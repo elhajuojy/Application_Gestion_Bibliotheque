@@ -66,6 +66,11 @@ public class BookExampleDaoImpl implements CrudDao<BookExample> , BookExampleDao
     }
 
     @Override
+    public List<BookExample> getAll(boolean lazyLoading) {
+        return null;
+    }
+
+    @Override
     public BookExample save(BookExample bookExample) {
         String QUERY = "INSERT INTO BOOK_EXAMPLE ( ISBN ,AVAILABILITY ) VALUES (?, ?) ;";
         try{
