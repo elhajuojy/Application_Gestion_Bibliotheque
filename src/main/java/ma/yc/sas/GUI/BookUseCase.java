@@ -10,11 +10,9 @@ import ma.yc.sas.dao.impl.BookDaoImpl;
 import ma.yc.sas.dao.impl.BookExampleDaoImpl;
 import ma.yc.sas.model.Book;
 import ma.yc.sas.model.BookExample;
-import pl.mjaron.etudes.Arr;
 import pl.mjaron.etudes.Table;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
@@ -27,7 +25,7 @@ public class BookUseCase implements UserInterface {
 
     private CrudDao<Book> bookCrud ;
     private BookDao bookDao ;
-    private Book book = null;
+    private Book book ;
     private BookExampleDaoImpl bookExampleDao;
 
     public BookUseCase() throws SQLException {
@@ -41,13 +39,12 @@ public class BookUseCase implements UserInterface {
     public int displayOptions(Scanner scanner) {
         Print.log("\t 1- CREATE BOOK");
         Print.log("\t 2- UPDATE BOOK");
-        Print.log("\t 3- UPDATE BOOK STATUS");
-        Print.log("\t 4- DELETE BOOK");
-        Print.log("\t 5- GET ALL BOOKS");
-        Print.log("\t 6- FIND BOOKS BY ISBN , AUTHOR OU TITRE ");
-        Print.log("\t 7- SHOW ALL AVAILABLE BOOKS ");
-        Print.log("\t 8- FIND LOST BOOKS  ");
-        Print.log("\t 9- RETURN");
+        Print.log("\t 3- DELETE BOOK");
+        Print.log("\t 4- GET ALL BOOKS");
+        Print.log("\t 5- FIND BOOKS BY ISBN , AUTHOR OU TITRE ");
+        Print.log("\t 6- SHOW ALL AVAILABLE BOOKS ");
+        Print.log("\t 7- FIND LOST BOOKS  ");
+        Print.log("\t 8- RETURN");
         int choice =  scanner.nextInt();
         switch (choice) {
             case 1 ->
@@ -57,35 +54,27 @@ public class BookUseCase implements UserInterface {
                 // UPDATE BOOK
                     this.updateBook(scanner);
             case 3 ->
-                    this.showAvailableBooks(scanner,Availability.AVAILABLE);
-            case 4 ->
                 // DELETE BOOK
                     this.deleteBook(scanner);
-            case 5 ->
+            case 4 ->
                 // GET ALL BOOKS
                     this.getAllBooks(scanner);
-            case 6 ->
+            case 5 ->
                 // FIND BOOKS BY ISBN
                     this.search(scanner);
-            case 7 ->
+            case 6 ->
                 // FIND BOOKS BY ISBN
-                    this.findBookByIdISbn(scanner);
-            case 8 ->
+                    this.showAvailableBooks(scanner,Availability.AVAILABLE);
+            case 7 ->
                 // RETURN
                     this.showAvailableBooks(scanner,Availability.LOST);
-            case 9 ->
+            case 8 ->
                 // RETURN
                     new MainGui().displayOptions(scanner);
         }
         return  0;
     }
 
-    private void findLostBooks(Scanner scanner) {
-    }
-
-    private void updateBookStatus(Scanner scanner) {
-        //
-    }
 
     private void showAvailableBooks(Scanner scanner , Availability availability) {
         //affiche les livre disponible
@@ -192,7 +181,7 @@ public class BookUseCase implements UserInterface {
 
     private void getAllBooks(Scanner scanner) {
         Print.log("=== GET ALL BOOKS === ");
-        List<Book> books = this.bookCrud.getAll();
+        List<Book> books = this.bookCrud.getAll(false);
         Table.render(books, Book.class).run();
         Util.readString("Click Done ",scanner);
         this.displayOptions(scanner);
@@ -204,8 +193,7 @@ public class BookUseCase implements UserInterface {
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
         this.book.setISBN(ISBN);
-        Book book1 = this.bookCrud.delete(this.book);
-        this.book = book1;
+        this.book = this.bookCrud.delete(this.book);
         if (this.book == null){
             Print.log("CAN NOT DELETE THIS BOOK MAKE SURE THIS BOOK EXISTS OR PROVIDE THE CORRECT ISBN");
         }
@@ -224,7 +212,7 @@ public class BookUseCase implements UserInterface {
            //START ASK ABOUT UPDATE BOOK
             String titre = Util.readString("titre",scanner);
             System.out.print("Quantite : ");
-            int quantite = scanner.nextInt(bookOptional.get().getQuantite());
+            int quantite = scanner.nextInt();
             String author = Util.readString("Author",scanner);
             // CREATE BOOK
             book = new Book();

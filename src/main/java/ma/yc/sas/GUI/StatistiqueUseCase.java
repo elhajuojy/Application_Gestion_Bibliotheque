@@ -55,6 +55,8 @@ public class StatistiqueUseCase implements UserInterface {
 
     private void GenerateRapportWithAllStatistque(Scanner scanner) {
         //generate rapport
+        this.statistiqueDao.generateRapport();
+        Print.log("DONE ");
         this.displayOptions(scanner);
     }
     private void nomberTotalDeLivre(Scanner scanner) {

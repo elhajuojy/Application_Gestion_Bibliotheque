@@ -24,7 +24,7 @@ public class Application {
             MainGui mainGui = new MainGui();
             Print.log("Library Application ");
             CrudDao<Book> BookDao = new BookDaoImpl();
-            Book book = BookDao.get(9781984819194L).get();
+//            Book book = BookDao.get(9781984819194L).get();
 //            book.setISBN(387943793474387834L);
 //            book.setAuthor("marcus aurelius");
 //            book.setTitre("Meditations: Penguin Classics");

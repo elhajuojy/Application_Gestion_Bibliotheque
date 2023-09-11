@@ -63,7 +63,7 @@ public class EmprunatUseCase implements UserInterface{
         }
         return  0;
     }
-    public  void loanBook(){
+    private   void loanBook(){
         Print.log(" === EMPRUNT LIVRE ===");
         //if you want to loan
             // need book
@@ -132,17 +132,17 @@ public class EmprunatUseCase implements UserInterface{
         }
 
     }
-    public void returnBook(){
+    private void returnBook(){
         //9780451524935
         //same as declare book but with update action to available
         this.declareBook(Availability.AVAILABLE);
     }
 
-    public void declareBookLost(){
+    private void declareBookLost(){
         this.declareBook(Availability.LOST);
     }
 
-    public void declareBook(Availability availability){
+    private void declareBook(Availability availability){
         //if you want to declare book lost
         // first ask for isbn than show all book example and than
         // ask for the book id to make it lost ()
@@ -171,11 +171,7 @@ public class EmprunatUseCase implements UserInterface{
             System.out.println("THIS BOOK DOESN'T HAVE EXAMPLES IN ");
         }
 
-
         this.displayOptions(scanner);
-
-
-
 
 
     }

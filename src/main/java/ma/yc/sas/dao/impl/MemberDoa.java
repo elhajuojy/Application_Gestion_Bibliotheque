@@ -62,6 +62,11 @@ public class MemberDoa implements CrudDao<Member> {
     }
 
     @Override
+    public List<Member> getAll(boolean lazyLoading) {
+        return null;
+    }
+
+    @Override
     public Member save(Member member) {
         String QUERY = "INSERT INTO MEMBER ( NUMERO_MEMBRE , NOM, PRENOM ) VALUES (?, ?, ?) ;";
         try{
