@@ -1,19 +1,23 @@
 package ma.yc.sas.dao.impl;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
 import ma.yc.sas.core.Print;
+import ma.yc.sas.core.Util;
 import ma.yc.sas.dao.CrudDao;
 import ma.yc.sas.dao.StatistiqueDao;
 import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.enums.Availability;
 import ma.yc.sas.model.Book;
 
+import java.io.FileOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StatistiqueDaoImpl implements StatistiqueDao {
@@ -66,7 +70,73 @@ public class StatistiqueDaoImpl implements StatistiqueDao {
 
     @Override
     public void generateRapport() {
+        Document document = new Document();
 
+        try {
+            // Generate a random number between 0 and 9999
+            Random random = new Random();
+            int randomNumber = random.nextInt(10000);
+
+            // Define the output file path for the PDF report with the random number
+            String outputPath = "rapport-output/report" + randomNumber + ".pdf";
+            PdfWriter.getInstance(document, new FileOutputStream(outputPath));
+
+            // Open the document for writing
+            document.open();
+
+            // Add content to the PDF report
+            // You can use the document object to add text, tables, images, etc.
+
+            // Add a title
+            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
+            Paragraph title = new Paragraph("Library Statistics Report", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            document.add(title);
+
+            // Add a date
+            Date currentDate = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Paragraph dateParagraph = new Paragraph("Date: " + dateFormat.format(currentDate));
+            dateParagraph.setAlignment(Element.ALIGN_RIGHT);
+            document.add(dateParagraph);
+
+            // Add a section for book statistics
+            Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
+            Paragraph bookSection = new Paragraph("Book Statistics", sectionFont);
+            bookSection.setAlignment(Element.ALIGN_LEFT);
+            document.add(bookSection);
+
+            // Add the number of total books
+            int totalBooks = countAllBooks();
+            Paragraph totalBooksParagraph = new Paragraph("Total Books: " + totalBooks);
+            document.add(totalBooksParagraph);
+
+            // Add the number of available books
+            int availableBooks = countAvailableBooks();
+            Paragraph availableBooksParagraph = new Paragraph("Available Books: " + availableBooks);
+            document.add(availableBooksParagraph);
+
+            // Add the number of not available books
+            int notAvailableBooks = countNotAvailableBooks();
+            Paragraph notAvailableBooksParagraph = new Paragraph("Not Available Books: " + notAvailableBooks);
+            document.add(notAvailableBooksParagraph);
+
+            // Add the number of lost books
+            int lostBooks = countLostBooks();
+            Paragraph lostBooksParagraph = new Paragraph("Lost Books: " + lostBooks);
+            document.add(lostBooksParagraph);
+
+            // Add more content to the report as needed
+            // ...
+
+            // Close the document when finished
+            document.close();
+
+            // Print a message indicating that the report has been generated
+            System.out.println("PDF report generated successfully at " + outputPath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

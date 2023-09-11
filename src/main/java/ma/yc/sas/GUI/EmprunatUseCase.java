@@ -171,11 +171,7 @@ public class EmprunatUseCase implements UserInterface{
             System.out.println("THIS BOOK DOESN'T HAVE EXAMPLES IN ");
         }
 
-
         this.displayOptions(scanner);
-
-
-
 
 
     }
