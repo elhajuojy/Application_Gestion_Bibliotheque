@@ -1,7 +1,6 @@
 package ma.yc.sas.database;
 
 import ma.yc.sas.core.Print;
-import ma.yc.sas.core.QueryBuilder;
 
 import java.sql.*;
 
@@ -39,6 +38,21 @@ public class DatabaseConnection {
         return instance;
     }
 
+    public static boolean closeConnection(){
+
+        if (instance ==null){
+            return false;
+        }else {
+            try {
+                instance.getConnection().close();
+                instance = null;
+                return true;
+            } catch (SQLException e) {
+                Print.log(e.toString());
+            }
+        }
+        return false;
+    }
 
 
 }

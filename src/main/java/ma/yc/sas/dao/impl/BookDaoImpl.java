@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public class BookDaoImpl implements CrudDao<Book>, BookDao {
+public class BookDaoImpl implements BookDao {
     List<Book> books = new ArrayList<>();
     Connection databaseConnection ;
     Mapper<Book> bookMapper ;

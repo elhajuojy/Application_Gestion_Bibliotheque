@@ -24,18 +24,16 @@ import java.util.*;
 public class EmprunatUseCase implements UserInterface{
 
     private Scanner scanner ;
-    private BookExampleDao bookExample;
+    private BookExampleDao bookExampleDao;
     private CrudDao<Book> bookCrudDao ;
     private CrudDao<Member> memberCrudDao ;
-    private CrudDao<BookExample> bookExampleDaoCrudDao ;
     private CrudDao<Emprunt> empruntCrudDao ;
-    private   List<BookExample> bookExamples = new ArrayList<>();
+    private  List<BookExample> bookExamples = new ArrayList<>();
 
     public EmprunatUseCase() throws SQLException {
-        this.bookExample   = new BookExampleDaoImpl();
+        this.bookExampleDao   = new BookExampleDaoImpl();
         this.bookCrudDao  = new BookDaoImpl();
         this.memberCrudDao = new MemberDoa();
-        this.bookExampleDaoCrudDao= new BookExampleDaoImpl();
         this.empruntCrudDao = new EmpruntDao();
     }
 
@@ -115,7 +113,7 @@ public class EmprunatUseCase implements UserInterface{
                 emprunt.setDateEmprunt(null);
                 emprunt.setDateRoutour(null);
                 Emprunt emprunt1 = this.empruntCrudDao.save(emprunt);
-                this.bookExample.updateBookExampleStatus(bookExamples.get(0),Availability.NOT_AVAILABLE);
+                this.bookExampleDao.updateBookExampleStatus(bookExamples.get(0),Availability.NOT_AVAILABLE);
 
                 if (emprunt1 !=null){
                     Print.log("THANK U FOR YOUR WAITING ENJOY READING ");
@@ -151,7 +149,7 @@ public class EmprunatUseCase implements UserInterface{
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
             if (this.bookExamples.size()==0){
-                this.bookExamples  = this.bookExample.findAllBooksExampleByIsbn(ISBN);
+                this.bookExamples  = this.bookExampleDao.findAllBooksExampleByIsbn(ISBN);
             }
         Table.render(bookExamples,BookExample.class).run();
         //than ask for book id and change the book status to lost
@@ -164,7 +162,7 @@ public class EmprunatUseCase implements UserInterface{
                     "AVAILABILITY",availability.toString()
             };
             bookExample1.setId(id);
-            this.bookExampleDaoCrudDao.update(bookExample1,params);
+            this.bookExampleDao.update(bookExample1,params);
             Print.log("THE BOOK "+availability.toString()+"  WITH ID :"+ id);
 
         }else{
