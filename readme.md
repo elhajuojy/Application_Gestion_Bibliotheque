@@ -1,5 +1,29 @@
-# Application_Gestion_Bibliotheque
+# Application Gestion Bibliotheque
 
+### Installation de l'application
+
+- Cloner le projet sur votre machine locale
+- Ouvrir le projet dans votre IDE
+- run commande `mvn clean install` pour installer les dépendances
+- run commande docker `docker-compose up` pour lancer la base de données
+- exécuter le script `./database.sql` pour créer la base de données
+- run commande `mvn spring-boot:run` pour lancer l'application
+- L'application est accessible sur console
+
+### Prérequis
+- Java 17 and +
+- Maven 3.6.3
+- DOCKER
+- git 2.25.1
+- IDE (IntelliJ IDEA, Eclipse, NetBeans, etc.)
+
+## DIAGRAMME DE CLASSES
+![Diagramme de classes](./assets/diagramClassBookMangementLibrary.png)
+
+## DIAGRAMME DE SEQUENCE
+![Diagramme de case de utilisation](./assets/diagramUseCaseBookLibraryMangement.png)
+
+## PROJECT CONTEXT
 Contexte La bibliothèque municipale de la ville de paris rencontre plusieurs problèmes liés à la gestion manuelle des livres et à l'absence d'un système de suivi efficace. Ces problèmes se traduisent particulièrement par les difficultés suivantes:
 
 -Gestion inefficace : Les bibliothécaires doivent effectuer toutes les tâches liées à la gestion des livres manuellement, ce qui peut entraîner des erreurs et une perte de temps. Il est difficile de maintenir une base de données à jour et de suivre l'état de chaque livre (disponible ou emprunté).
