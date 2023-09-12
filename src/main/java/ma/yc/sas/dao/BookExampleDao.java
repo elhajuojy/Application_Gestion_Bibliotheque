@@ -5,7 +5,7 @@ import ma.yc.sas.model.BookExample;
 
 import java.util.List;
 
-public interface BookExampleDao {
+public interface BookExampleDao extends CrudDao<BookExample> {
     List<BookExample> findAvailableeBooks(Availability availability);
     List<BookExample> findAvailableeBooks(Long ISBN,Availability availability);
     List<BookExample> findAllBooksExampleByIsbn(long isbn);

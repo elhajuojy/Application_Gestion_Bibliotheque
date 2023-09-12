@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BookExampleDaoImpl implements CrudDao<BookExample> , BookExampleDao {
+public class BookExampleDaoImpl implements BookExampleDao {
 
     List<BookExample> bookExamples  = new ArrayList<>();
     Connection databaseConnection = DatabaseConnection.getInstance().getConnection() ;

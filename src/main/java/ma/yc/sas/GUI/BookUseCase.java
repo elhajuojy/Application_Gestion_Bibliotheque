@@ -23,13 +23,11 @@ import java.util.Scanner;
 @ToString
 public class BookUseCase implements UserInterface {
 
-    private CrudDao<Book> bookCrud ;
     private BookDao bookDao ;
     private Book book ;
     private BookExampleDaoImpl bookExampleDao;
 
     public BookUseCase() throws SQLException {
-        this.bookCrud = new BookDaoImpl();
         this.bookDao = new BookDaoImpl();
         this.book = new Book();
         this.bookExampleDao = new BookExampleDaoImpl();
@@ -151,7 +149,7 @@ public class BookUseCase implements UserInterface {
         book.setQuantite(quantite);
 
 
-        if ( bookCrud.save(book) != null){
+        if ( bookDao.save(book) != null){
             Print.log("=== the book have been add with success ===");
             Table.render(new Book[]{book},Book.class).run();
             Util.readString("Click Done ",scanner);
@@ -168,7 +166,7 @@ public class BookUseCase implements UserInterface {
         scanner.nextLine();
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
-        Optional<Book> bookOptional =  bookCrud.get(ISBN);
+        Optional<Book> bookOptional =  bookDao.get(ISBN);
         if (bookOptional.isEmpty()){
             Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
         }else {
@@ -181,7 +179,7 @@ public class BookUseCase implements UserInterface {
 
     private void getAllBooks(Scanner scanner) {
         Print.log("=== GET ALL BOOKS === ");
-        List<Book> books = this.bookCrud.getAll(false);
+        List<Book> books = this.bookDao.getAll(false);
         Table.render(books, Book.class).run();
         Util.readString("Click Done ",scanner);
         this.displayOptions(scanner);
@@ -193,7 +191,7 @@ public class BookUseCase implements UserInterface {
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
         this.book.setISBN(ISBN);
-        this.book = this.bookCrud.delete(this.book);
+        this.book = this.bookDao.delete(this.book);
         if (this.book == null){
             Print.log("CAN NOT DELETE THIS BOOK MAKE SURE THIS BOOK EXISTS OR PROVIDE THE CORRECT ISBN");
         }
@@ -205,7 +203,7 @@ public class BookUseCase implements UserInterface {
         scanner.nextLine();
         System.out.print("ISBN : ");
         long ISBN = scanner.nextLong();
-        Optional<Book> bookOptional =  bookCrud.get(ISBN);
+        Optional<Book> bookOptional =  bookDao.get(ISBN);
         if (bookOptional.isEmpty()){
             Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
         }else {
@@ -222,7 +220,7 @@ public class BookUseCase implements UserInterface {
                     "AUTHOR", author,
                     "QUANTITE" , String.valueOf(quantite)
             };
-            Book book1 = this.bookCrud.update(book,params);
+            Book book1 = this.bookDao.update(book,params);
 
             if (book1!=null){
                 Print.log("THE BOOK HAS BEEN UPDATE SUCCESSFULLY ");

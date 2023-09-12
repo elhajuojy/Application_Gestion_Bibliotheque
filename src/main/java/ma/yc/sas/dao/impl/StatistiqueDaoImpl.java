@@ -9,6 +9,7 @@ import ma.yc.sas.dao.StatistiqueDao;
 import ma.yc.sas.database.DatabaseConnection;
 import ma.yc.sas.enums.Availability;
 import ma.yc.sas.model.Book;
+import ma.yc.sas.model.BookExample;
 
 import java.io.FileOutputStream;
 import java.sql.Connection;
@@ -157,5 +158,35 @@ public class StatistiqueDaoImpl implements StatistiqueDao {
     @Override
     public int countLostBooks() {
         return this.countAllBooksFromList(false,Availability.LOST);
+    }
+
+    @Override
+    public Optional<BookExample> get(long id) {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<BookExample> getAll() {
+        return null;
+    }
+
+    @Override
+    public List<BookExample> getAll(boolean lazyLoading) {
+        return null;
+    }
+
+    @Override
+    public BookExample save(BookExample bookExample) {
+        return null;
+    }
+
+    @Override
+    public BookExample update(BookExample bookExample, String[] params) {
+        return null;
+    }
+
+    @Override
+    public BookExample delete(BookExample bookExample) {
+        return null;
     }
 }
