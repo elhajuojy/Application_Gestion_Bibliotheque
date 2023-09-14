@@ -78,6 +78,8 @@ public class BookUseCase implements UserInterface {
         //affiche les livre disponible
         Print.log("=== LIST OF BOOKS  "+ availability.toString()+ " ===");
         Table.render(this.getBookExampleDao().findAvailableeBooks(availability), BookExample.class).run();
+        Util.readString("Click Done ",scanner);
+        this.displayOptions(scanner);
     }
 
     private void search(Scanner scanner) {
@@ -107,6 +109,7 @@ public class BookUseCase implements UserInterface {
         Optional<Book> bookOptional =  bookDao.finBookByAuthor(author);
         if (bookOptional.isEmpty()){
             Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+            this.displayOptions(scanner);
         }else {
             Table.render(new Book[]{bookOptional.get()},Book.class).run();
             Util.readString("Click Done ",scanner);
@@ -121,6 +124,7 @@ public class BookUseCase implements UserInterface {
         Optional<Book> bookOptional =  bookDao.findBookByTitle(titre);
         if (bookOptional.isEmpty()){
             Print.log("THIS BOOK DOESN'T EXIST IN THE DATABASE ");
+            this.displayOptions(scanner);
         }else {
             Table.render(new Book[]{bookOptional.get()},Book.class).run();
             Util.readString("Click Done ",scanner);
@@ -174,6 +178,7 @@ public class BookUseCase implements UserInterface {
             Util.readString("Click Done ",scanner);
             this.displayOptions(scanner);
         }
+        this.displayOptions(scanner);
 
     }
 
@@ -196,6 +201,7 @@ public class BookUseCase implements UserInterface {
             Print.log("CAN NOT DELETE THIS BOOK MAKE SURE THIS BOOK EXISTS OR PROVIDE THE CORRECT ISBN");
         }
         Print.log("THE BOOK HAVE BEEN DELETED SUCCESSFULLY");
+        this.displayOptions(scanner);
     }
 
     private void updateBook(Scanner scanner) {
@@ -227,8 +233,9 @@ public class BookUseCase implements UserInterface {
             }else{
                 Print.log("THERE'S A PROBLEM UPDATE THIS BOOK CHECK THE INFORMATION OR THE WRITE ISBN ");
             }
-            this.displayOptions(scanner);
         }
+
+        this.displayOptions(scanner);
 
     }
 }

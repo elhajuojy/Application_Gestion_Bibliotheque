@@ -2,7 +2,7 @@ package ma.yc.sas.model;
 
 import lombok.*;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 
@@ -16,6 +16,7 @@ public class Emprunt {
     private Date dateEmprunt;
     private Date dateRoutour;
     private List<BookExample> bookExamples;
+
 
 
 
