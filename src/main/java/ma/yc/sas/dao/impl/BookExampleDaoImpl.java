@@ -152,6 +152,7 @@ public class BookExampleDaoImpl implements BookExampleDao {
             String availabilityValue = availability.name();
             statement.setString(1,availabilityValue);
             resultSet = statement.executeQuery();
+            this.bookExamples.clear();
             while (resultSet.next()){
                 bookExamples.add(bookExampleMapper.toClassObject(resultSet));
             }
@@ -173,6 +174,7 @@ public class BookExampleDaoImpl implements BookExampleDao {
             statement.setString(1,availabilityValue);
             statement.setLong(2,ISBN);
             resultSet = statement.executeQuery();
+            this.bookExamples.clear();
             while (resultSet.next()){
                 bookExamples.add(bookExampleMapper.toClassObject(resultSet));
             }

@@ -82,7 +82,7 @@ public class BookDaoImpl implements BookDao {
                 Book book = bookMapper.toClassObject(resultSet) ;
                 // need to get all book bookExamples ;
                 // the thing is i will use the book-example dto to getAll books with this isbn and
-                //mappe  list book-examples to to book
+                //mappe  list book-examples to  book
                 if (lazyLoading){
                     List<BookExample> bookExamples = this.bookExampleDao.findAllBooksExampleByIsbn(resultSet.getLong("ISBN"));
                     book.setBookExamples(bookExamples);

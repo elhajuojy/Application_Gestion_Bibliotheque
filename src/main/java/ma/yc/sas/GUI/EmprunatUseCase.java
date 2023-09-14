@@ -14,6 +14,7 @@ import ma.yc.sas.model.BookExample;
 import ma.yc.sas.model.Emprunt;
 import ma.yc.sas.model.Member;
 import pl.mjaron.etudes.Table;
+import java.sql.Date;
 
 import javax.sound.midi.MetaMessage;
 import java.sql.SQLException;
@@ -109,9 +110,14 @@ public class EmprunatUseCase implements UserInterface{
                 // Add 15 days to the current date
                 calendar.add(Calendar.DAY_OF_MONTH, 15);
                 // Get the new date
-                Date newDate = calendar.getTime();
-                emprunt.setDateEmprunt(null);
-                emprunt.setDateRoutour(null);
+                LocalDate today = LocalDate.now();
+                LocalDate fiveDaysLater = today.plusDays(5);
+
+                Date sqlToday = Date.valueOf(today);
+                Date sqlFiveDaysLater = Date.valueOf(fiveDaysLater);
+                emprunt.setDateEmprunt(sqlToday);
+
+                emprunt.setDateRoutour(sqlFiveDaysLater);
                 Emprunt emprunt1 = this.empruntCrudDao.save(emprunt);
                 this.bookExampleDao.updateBookExampleStatus(bookExamples.get(0),Availability.NOT_AVAILABLE);
 
